@@ -1,6 +1,7 @@
 console.log('Akwadra Super Builder Initialized - Haraj Mode');
 
-// Check if Tailwind loaded, if not enable fallback styles
+// Check if Tailwind loaded - wait for CDN to initialize
+const TAILWIND_LOAD_TIMEOUT = 100;
 setTimeout(() => {
     const testElement = document.createElement('div');
     testElement.className = 'bg-white';
@@ -10,15 +11,10 @@ setTimeout(() => {
     
     if (!hasBackground) {
         console.warn('Tailwind CSS not loaded, using fallback styles');
-        const fallbackStyles = document.getElementById('fallback-styles');
-        if (fallbackStyles && !fallbackStyles.innerHTML) {
-            // Styles are already in the HTML, this is just a check
-            console.log('Fallback styles active');
-        }
     } else {
         console.log('Tailwind CSS loaded successfully');
     }
-}, 100);
+}, TAILWIND_LOAD_TIMEOUT);
 
 // --- Data & State ---
 const categories = [
