@@ -1,5 +1,21 @@
 console.log('Akwadra Super Builder Initialized - Haraj Mode');
 
+// Check if Tailwind loaded - wait for CDN to initialize
+const TAILWIND_LOAD_TIMEOUT = 100;
+setTimeout(() => {
+    const testElement = document.createElement('div');
+    testElement.className = 'bg-white';
+    document.body.appendChild(testElement);
+    const hasBackground = window.getComputedStyle(testElement).backgroundColor !== 'rgba(0, 0, 0, 0)';
+    document.body.removeChild(testElement);
+    
+    if (!hasBackground) {
+        console.warn('Tailwind CSS not loaded, using fallback styles');
+    } else {
+        console.log('Tailwind CSS loaded successfully');
+    }
+}, TAILWIND_LOAD_TIMEOUT);
+
 // --- Data & State ---
 const categories = [
     { id: 'all', name: 'الكل', icon: 'fa-border-all' },
@@ -109,19 +125,19 @@ function renderListings(data) {
     emptyState.classList.remove('flex');
 
     grid.innerHTML = data.map((item, index) => `
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover-effect cursor-pointer group animate-slide-up" style="animation-delay: ${index * 0.05}s">
+        <div class="card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover-effect cursor-pointer group animate-slide-up" style="animation-delay: ${index * 0.05}s">
             <div class="relative h-48 overflow-hidden">
                 <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                 <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-gray-700 shadow-sm">
                     <i class="fa-solid fa-camera me-1"></i> صور
                 </div>
             </div>
-            <div class="p-4">
+            <div class="card-content p-4">
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">${item.title}</h3>
                 </div>
                 <div class="flex items-center gap-2 mb-3">
-                    <span class="text-xl font-black text-emerald-600">${item.price.toLocaleString()}</span>
+                    <span class="price text-xl font-black text-emerald-600">${item.price.toLocaleString()}</span>
                     <span class="text-xs font-bold text-gray-400 mt-1">ريال</span>
                 </div>
                 <div class="flex items-center justify-between text-xs text-gray-500 border-t border-gray-50 pt-3">
@@ -204,20 +220,27 @@ function setupEventListeners() {
 function openAddModal() {
     const modal = document.getElementById('addModal');
     modal.classList.remove('hidden');
+    modal.classList.add('active'); // For fallback styles
 }
 
 function closeAddModal() {
-    document.getElementById('addModal').classList.add('hidden');
+    const modal = document.getElementById('addModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('active'); // For fallback styles
 }
 
 function openCommissionModal() {
-    document.getElementById('commissionModal').classList.remove('hidden');
+    const modal = document.getElementById('commissionModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('active'); // For fallback styles
     document.getElementById('salePrice').value = '';
     document.getElementById('commissionResult').innerText = '0';
 }
 
 function closeCommissionModal() {
-    document.getElementById('commissionModal').classList.add('hidden');
+    const modal = document.getElementById('commissionModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('active'); // For fallback styles
 }
 
 // --- Commission Logic (1% Rule) ---
@@ -233,7 +256,9 @@ function showToast(message) {
     const toast = document.getElementById('toast');
     document.getElementById('toastMessage').innerText = message;
     toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('show'); // For fallback styles
     setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('show'); // For fallback styles
     }, 3000);
 }
