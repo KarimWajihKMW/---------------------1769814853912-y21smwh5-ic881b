@@ -4,11 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سوق أكوادرا - حراج النسخة الحديثة</title>
+    <!-- Fallback: Try CDN first, but include critical inline styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Critical fallback styles when CDN is blocked -->
+    <style id="fallback-styles">
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f9fafb; 
+            color: #1f2937;
+            line-height: 1.5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 0; position: sticky; top: 0; z-index: 50; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        nav a, nav button { text-decoration: none; color: inherit; }
+        h1, h2, h3 { font-weight: bold; margin-bottom: 0.5rem; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        h3 { font-size: 1.125rem; }
+        button, input, select, textarea { 
+            font-family: inherit; 
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+        }
+        button { 
+            background: #10b981; 
+            color: white; 
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover { background: #059669; }
+        input, select, textarea { width: 100%; margin-bottom: 1rem; }
+        .grid { 
+            display: grid; 
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            margin: 2rem 0;
+        }
+        .card { 
+            background: white; 
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 1rem; }
+        .price { color: #10b981; font-weight: bold; font-size: 1.25rem; }
+        .modal { 
+            display: none;
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 60;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content { 
+            background: white; 
+            border-radius: 1rem; 
+            padding: 2rem; 
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .categories { 
+            display: flex; 
+            gap: 1rem; 
+            overflow-x: auto; 
+            padding: 1rem 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .categories button { 
+            white-space: nowrap;
+            flex-shrink: 0;
+            background: white;
+            color: #4b5563;
+        }
+        .categories button.active { background: #10b981; color: white; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .text-center { text-align: center; }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(5rem);
+            background: #1f2937;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 2rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 70;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-cairo selection:bg-emerald-200 selection:text-emerald-900 overflow-x-hidden">
 
@@ -97,9 +201,9 @@
     </main>
 
     <!-- Add Listing Modal -->
-    <div id="addModal" class="fixed inset-0 z-[60] hidden">
+    <div id="addModal" class="modal fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
-        <div class="absolute bottom-0 md:top-1/2 md:left-1/2 md:bottom-auto md:transform md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-[600px] bg-white md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden animate-slide-up md:animate-scale-in">
+        <div class="modal-content absolute bottom-0 md:top-1/2 md:left-1/2 md:bottom-auto md:transform md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-[600px] bg-white md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden animate-slide-up md:animate-scale-in">
             <div class="p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">إضافة إعلان جديد</h2>
@@ -165,9 +269,9 @@
     </div>
 
     <!-- Commission Modal -->
-    <div id="commissionModal" class="fixed inset-0 z-[60] hidden">
+    <div id="commissionModal" class="modal fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeCommissionModal()"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-2xl shadow-2xl p-8 animate-scale-in">
+        <div class="modal-content absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-2xl shadow-2xl p-8 animate-scale-in">
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-calculator text-2xl text-emerald-600"></i>
